@@ -79,6 +79,7 @@ router.get("/organizer/:organizerId", async (req, res) => {
 
     const requests = await Request.find({ organizerId })
       .populate("donationId")
+      .populate("organizationId")
       .sort({ createdAt: -1 });
 
     return res.status(200).json(requests);
@@ -102,6 +103,7 @@ router.get("/organization/:organizationId", async (req, res) => {
 
     const requests = await Request.find({ organizationId })
       .populate("donationId")
+      .populate("organizationId")
       .sort({ createdAt: -1 });
 
     return res.status(200).json(requests);

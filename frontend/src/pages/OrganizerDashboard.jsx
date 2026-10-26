@@ -274,9 +274,25 @@ function PostFood() {
   const [error, setError] = useState("");
 
   function change(e) {
+    const { name, value } = e.target;
+
+    // Quantity accepts digits only while typing (no minus sign or decimals).
+    if (name === "quantity" && value !== "" && !/^\d+$/.test(value)) {
+      return;
+    }
+
+    // Event name and event type accept letters and spaces only.
+    if (
+      ["eventName", "eventType"].includes(name) &&
+      value !== "" &&
+      !/^[a-zA-Z\s]*$/.test(value)
+    ) {
+      return;
+    }
+
     setForm((current) => ({
       ...current,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   }
 
@@ -409,22 +425,79 @@ function PostFood() {
         );
       }
 
+      // Validate required text fields
+      const requiredFields = [
+        ["Event Name", form.eventName],
+        ["Event Type", form.eventType],
+        ["Food Description", form.foodDescription],
+        ["Food Type", form.foodType],
+      ];
+
+      for (const [label, value] of requiredFields) {
+        if (!value || !value.trim()) {
+          throw new Error(`${label} is required.`);
+        }
+      }
+
+      // Validate event name and event type: letters and spaces only.
+      if (!/^[a-zA-Z\s]+$/.test(form.eventName.trim())) {
+        throw new Error("Event Name must contain only letters and spaces.");
+      }
+
+      if (!/^[a-zA-Z\s]+$/.test(form.eventType.trim())) {
+        throw new Error("Event Type must contain only letters and spaces.");
+      }
+
+      // Food description must contain letters and must not be only symbols.
+      if (!/[a-zA-Z]/.test(form.foodDescription)) {
+        throw new Error("Please enter a valid Food Description.");
+      }
+
+      // Validate quantity: positive whole number only (no minus or decimals).
+      if (!/^[1-9]\d*$/.test(form.quantity.trim())) {
+        throw new Error(
+          "Quantity must be a positive whole number. Negative numbers and decimals are not allowed."
+        );
+      }
+
+      const quantity = Number(form.quantity);
+
+      // Validate availability dates
+      if (!form.availableFrom || !form.availableUntil) {
+        throw new Error("Please select both availability dates.");
+      }
+
+      const availableFrom = new Date(form.availableFrom);
+      const availableUntil = new Date(form.availableUntil);
+
+      if (
+        Number.isNaN(availableFrom.getTime()) ||
+        Number.isNaN(availableUntil.getTime())
+      ) {
+        throw new Error("Please enter valid availability dates.");
+      }
+
+      if (availableUntil <= availableFrom) {
+        throw new Error(
+          "Available Until must be later than Available From."
+        );
+      }
+
+      // Validate pickup location
       if (!location) {
-        throw new Error("Please select the food pickup location on the map.");
+        throw new Error(
+          "Please select the food pickup location on the map."
+        );
       }
 
-      if (!form.pickupLocation.trim()) {
-        throw new Error("Please enter or select a pickup location.");
+      if (
+        !form.pickupLocation ||
+        !form.pickupLocation.trim()
+      ) {
+        throw new Error(
+          "Please enter or select a pickup location."
+        );
       }
-
-      if (Number(form.quantity) < 1 || !Number.isFinite(Number(form.quantity))) {
-        throw new Error("Quantity must be at least 1.");
-      }
-
-      if (new Date(form.availableUntil) <= new Date(form.availableFrom)) {
-        throw new Error("Available Until must be later than Available From.");
-      }
-
       const donationData = {
         ...form,
         organizerId,
@@ -754,10 +827,10 @@ function Requests() {
         items.map((item) =>
           item._id === id
             ? {
-                ...item,
-                status: data.request.status,
-                acceptedAt: data.request.acceptedAt,
-              }
+              ...item,
+              status: data.request.status,
+              acceptedAt: data.request.acceptedAt,
+            }
             : item
         )
       );
@@ -905,11 +978,10 @@ function DashboardButton({ children, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-full px-5 py-3 text-sm transition ${
-        active
+      className={`rounded-full px-5 py-3 text-sm transition ${active
           ? "bg-[#193c2c] text-white"
           : "border border-[#193c2c]/15 text-[#193c2c]/65 hover:border-[#193c2c] hover:text-[#193c2c]"
-      }`}
+        }`}
     >
       {children}
     </button>
@@ -952,6 +1024,8 @@ function Input({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
+        min={name === "quantity" ? "1" : undefined}
+        step={name === "quantity" ? "1" : undefined}
         className="w-full rounded-xl border border-[#193c2c]/15 bg-[#f8f7f2] px-4 py-3 outline-none transition focus:border-[#bd7148]"
       />
     </div>
