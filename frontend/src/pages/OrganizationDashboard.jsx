@@ -25,7 +25,7 @@ const CREAM = "#f8f7f2";
 
 async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("token");
-  const url = `${API}${path.startsWith("/") ? path : `/${path}`}`;
+  const url = `${API_URL}${path.startsWith("/") ? path : `/${path}`}`;
 
   const headers = {
     Accept: "application/json",

@@ -510,7 +510,7 @@ function PostFood() {
 
       console.log("Submitting donation:", donationData);
 
-      const response = await fetch(`${API}/api/donations`, {
+      const response = await fetch(`${API_URL}/api/donations`, {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify(donationData),
@@ -723,7 +723,7 @@ function MyDonations() {
         if (!id) throw new Error("Organizer ID missing. Please log in again.");
 
         const response = await fetch(
-          `${API}/api/donations/organizer/${id}`,
+          `${API_URL}/api/donations/organizer/${id}`,
           { headers: authHeaders() }
         );
 
@@ -801,7 +801,7 @@ function Requests() {
         if (!id) throw new Error("Organizer ID missing. Please log in again.");
 
         const response = await fetch(
-          `${API}/api/requests/organizer/${id}`,
+          `${API_URL}/api/requests/organizer/${id}`,
           { headers: authHeaders() }
         );
 
@@ -818,7 +818,7 @@ function Requests() {
 
   async function updateRequest(id, action) {
     try {
-      const response = await fetch(`${API}/api/requests/${id}/${action}`, {
+      const response = await fetch(`${API_URL}/api/requests/${id}/${action}`, {
         method: "PATCH",
         headers: authHeaders(),
       });
@@ -844,7 +844,7 @@ function Requests() {
   async function loadTracking(requestId) {
     try {
       const response = await fetch(
-        `${API}/api/requests/${requestId}/tracking`,
+        `${API_URL}/api/requests/${requestId}/tracking`,
         { headers: authHeaders() }
       );
 
