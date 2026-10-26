@@ -13,7 +13,7 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const API = (
+const API_URL = (
   import.meta.env.VITE_API_URL || "http://localhost:5000"
 ).replace(/\/+$/, "");
 
