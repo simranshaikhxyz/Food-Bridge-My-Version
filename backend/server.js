@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -15,7 +14,24 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests without an Origin header, such as server-to-server calls.
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Origin not allowed by CORS"));
+    },
+  })
+);
+
 app.use(express.json());
 
 // API routes
@@ -43,7 +59,9 @@ app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err);
 
   res.status(err.status || 500).json({
-    message: err.message || "Internal server error",
+    message: err.status === 500
+      ? "Internal server error"
+      : err.message || "Request failed",
   });
 });
 
@@ -53,7 +71,7 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(`FoodBridge server running on http://localhost:${PORT}`);
+      console.log(`FoodBridge server running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

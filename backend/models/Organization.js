@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const OrganizationSchema = new mongoose.Schema(
@@ -7,19 +8,16 @@ const OrganizationSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
     organizationType: {
       type: String,
       required: true,
       trim: true,
     },
-
     contactPerson: {
       type: String,
       required: true,
       trim: true,
     },
-
     email: {
       type: String,
       required: true,
@@ -27,37 +25,30 @@ const OrganizationSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-
     phone: {
       type: String,
       required: true,
       trim: true,
     },
-
     address: {
       type: String,
       required: true,
       trim: true,
     },
-
     peopleServed: {
       type: Number,
       default: null,
     },
-
     foodPreferences: {
       type: [String],
       default: [],
     },
-
     password: {
       type: String,
       required: true,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 const Organization =
